@@ -2,17 +2,15 @@ POST http://localhost:3000/posts
 Content-Type: application/json
 
 {
-  "title": "My fourth post",
+  "title": "My third post",
   "postType": "post",
-  "slug": "fourth-post",
+  "slug": "third-post",
   "status": "draft",
-  "content": "fourth-post-content",
+  "content": "third-post-content",
   "schema": "{\r\n    \"@context\": \"https:\/\/schema.org\",\r\n    \"@type\": \"Person\"\r\n  }",
   "featuredImageUrl": "http://localhost.com/images/image1.jpg",
   "publishOn": "2024-04-16T07:46:32+0000",
-  // "tags": [
-  //   "nestJS",
-  //   "typescript"
-  // ],
-  "metaOptions": {"metaValue": "{\"sidebarEnabled\": true, \"footerActive\": true }"}
+  "metaOptions": {"metaValue": "{\"sidebarEnabled\": true, \"footerActive\": true }"},
+   "authorId": 1,
+   "tags": [1]
 }

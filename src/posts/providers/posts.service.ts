@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Post } from '../post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOption } from 'src/meta-options/meta-option.entity';
+import { TagsService } from 'src/tags/providers/tags.service';
 
 @Injectable()
 export class PostsService {
@@ -17,33 +18,41 @@ export class PostsService {
     /**Inject metaOptionsRepository */
     @InjectRepository(MetaOption)
     private readonly metaOptionsRepository: Repository<MetaOption>,
+
+    /**Inject tagsService */
+    private readonly tagsService: TagsService,
   ) {}
 
   /**Creating new posts */
   public async create(@Body() createPostDto: CreatePostDto) {
+   // Find author from database based on authorId
+    let author = await this.usersService.findOneById(createPostDto.authorId);
+
+    // Find tags from database based on tagIds
+    let tags = await this.tagsService.findMultipleTags(createPostDto.tags);
+
     //Create post
-    let post = this.postsRepository.create(createPostDto);
+    let post = this.postsRepository.create({
+      ...createPostDto,
+      author,
+      tags,
+    });
     //return the post
     return await this.postsRepository.save(post);
   }
 
   /**Get all posts */
   public async findAll(userId: string) {
-    const user = this.usersService.findOneById(userId);
     let posts = await this.postsRepository.find({
-      relations: { metaOptions: true },
+      relations: { metaOptions: true, author: true, tags: true },
     });
     return posts;
   }
 
  /** Delete post */
  public async delete(id: number) {
-  // Find the post
-  let post = await this.postsRepository.findOneBy({ id });
   // Deleting post
   await this.postsRepository.delete(id);
-  // Delete mate options
-  await this.metaOptionsRepository.delete(post.metaOptions.id);
   // Confirmation message
   return { deleted: true, id };
  }
