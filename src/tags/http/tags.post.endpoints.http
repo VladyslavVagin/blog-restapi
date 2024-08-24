@@ -2,7 +2,7 @@ POST http://localhost:3000/tags
 Content-Type: application/json
 
 {
-  "name": "javascript",
-  "slug": "javascript",
-  "description": "The best programming language in the world"
+  "name": "react.js",
+  "slug": "react-js",
+  "description": "A JavaScript library for building user interfaces"
 }

@@ -2,5 +2,11 @@ PATCH http://localhost:3000/posts
 Content-Type: application/json
 
 {
-  "id": 1234
+  "id": 14,
+  // "title": "Wonderful Post",
+  // "status": "published",
+  // "content": "This is a wonderful post",
+  //  "metaOptions": {"metaValue": "{\"sidebarEnabled\": true, \"footerActive\": false }"},
+   "tags": [2, 4]
+
 }
