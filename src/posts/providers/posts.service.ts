@@ -1,4 +1,9 @@
-import { Body, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Injectable,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/providers/users.service';
 import { CreatePostDto } from '../dtos/create-post.dto';
 import { Repository } from 'typeorm';
@@ -7,6 +12,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOption } from 'src/meta-options/meta-option.entity';
 import { TagsService } from 'src/tags/providers/tags.service';
 import { PatchPostDto } from '../dtos/patch-post.dto';
+import { GetPostsDto } from '../dtos/get-posts.dto';
+import { PaginationProvider } from 'src/common/pagination/providers/pagination.service';
+import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
 
 @Injectable()
 export class PostsService {
@@ -22,6 +30,9 @@ export class PostsService {
 
     /**Inject tagsService */
     private readonly tagsService: TagsService,
+
+    /** Injecting paginationProvider */
+    private readonly paginationProvider: PaginationProvider
   ) {}
 
   /**Creating new posts */
@@ -43,10 +54,11 @@ export class PostsService {
   }
 
   /**Get all posts */
-  public async findAll(userId: string) {
-    let posts = await this.postsRepository.find({
-      relations: { metaOptions: true, author: true, tags: true },
-    });
+  public async findAll(postQuery: GetPostsDto ,userId: string): Promise<Paginated<Post>> {
+    let posts = await this.paginationProvider.paginateQuery({
+      limit: postQuery.limit,
+      page: postQuery.page
+    }, this.postsRepository);
     return posts;
   }
 
@@ -60,10 +72,35 @@ export class PostsService {
 
   /** Update post */
   public async update(patchPostDto: PatchPostDto) {
+    let tags = undefined;
+    let post = undefined;
     // Find the tags
-    let tags = await this.tagsService.findMultipleTags(patchPostDto.tags);
+    try {
+      tags = await this.tagsService.findMultipleTags(patchPostDto.tags);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process the request at the moment',
+      );
+    }
+
+    /** Number of tags should be equal */
+    if (!tags || tags.length !== patchPostDto.tags.length) {
+      throw new BadRequestException(
+        'Please check your tags IDs and ensure they are correct',
+      );
+    }
     // Find the post
-    let post = await this.postsRepository.findOneBy({ id: patchPostDto.id });
+    try {
+      post = await this.postsRepository.findOneBy({ id: patchPostDto.id });
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process the request at the moment',
+      );
+    }
+
+    if (!post) {
+      throw new BadRequestException('Post not found');
+    }
 
     // Update the post
     post.title = patchPostDto.title ?? post.title;
@@ -78,6 +115,13 @@ export class PostsService {
     // Assign new tags
     post.tags = tags;
     // Save ant return the post
-    return await this.postsRepository.save(post);
+    try {
+      await this.postsRepository.save(post);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process the request at the moment',
+      );
+    }
+    return post;
   }
 }

@@ -2,15 +2,17 @@ POST http://localhost:3000/posts
 Content-Type: application/json
 
 {
-  "title": "My third post",
-  "postType": "post",
-  "slug": "third-post",
-  "status": "draft",
-  "content": "third-post-content",
-  "schema": "{\r\n    \"@context\": \"https:\/\/schema.org\",\r\n    \"@type\": \"Person\"\r\n  }",
+  "title": "Angels for you",
+  "postType": "story",
+  "slug": "angels-for-you",
+  "status": "published",
+  "content": "test content",
+  "schema": "{\r\n \"@context\": \"https:\/\/schema.org\",\r\n \"@type\": \"Person\"\r\n }",
   "featuredImageUrl": "http://localhost.com/images/image1.jpg",
-  "publishOn": "2024-04-16T07:46:32+0000",
-  "metaOptions": {"metaValue": "{\"sidebarEnabled\": true, \"footerActive\": true }"},
-   "authorId": 1,
-   "tags": [1]
+  "publishOn": "2021-09-01T00:00:00Z",
+  "metaOptions" : {
+      "metaValue": "{\"sidebarEnabled\": true, \"footerActive\":true}"
+    },
+  "authorId":5,
+  "tags": [2, 3, 4]
 }
