@@ -15,6 +15,8 @@ import { PatchPostDto } from '../dtos/patch-post.dto';
 import { GetPostsDto } from '../dtos/get-posts.dto';
 import { PaginationProvider } from 'src/common/pagination/providers/pagination.service';
 import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
+import { CreatePostProvider } from './create-post.provider';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 
 @Injectable()
 export class PostsService {
@@ -32,33 +34,30 @@ export class PostsService {
     private readonly tagsService: TagsService,
 
     /** Injecting paginationProvider */
-    private readonly paginationProvider: PaginationProvider
+    private readonly paginationProvider: PaginationProvider,
+
+    /** Inject createPostProvider */
+    private readonly createPostProvider: CreatePostProvider,
   ) {}
 
   /**Creating new posts */
-  public async create(@Body() createPostDto: CreatePostDto) {
-    // Find author from database based on authorId
-    let author = await this.usersService.findOneById(createPostDto.authorId);
-
-    // Find tags from database based on tagIds
-    let tags = await this.tagsService.findMultipleTags(createPostDto.tags);
-
-    //Create post
-    let post = this.postsRepository.create({
-      ...createPostDto,
-      author,
-      tags,
-    });
+  public async create(createPostDto: CreatePostDto, user: ActiveUserData) {
     //return the post
-    return await this.postsRepository.save(post);
+    return await this.createPostProvider.create(createPostDto, user);
   }
 
   /**Get all posts */
-  public async findAll(postQuery: GetPostsDto ,userId: string): Promise<Paginated<Post>> {
-    let posts = await this.paginationProvider.paginateQuery({
-      limit: postQuery.limit,
-      page: postQuery.page
-    }, this.postsRepository);
+  public async findAll(
+    postQuery: GetPostsDto,
+    userId: string,
+  ): Promise<Paginated<Post>> {
+    let posts = await this.paginationProvider.paginateQuery(
+      {
+        limit: postQuery.limit,
+        page: postQuery.page,
+      },
+      this.postsRepository,
+    );
     return posts;
   }
 

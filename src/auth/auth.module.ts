@@ -9,6 +9,8 @@ import { UsersModule } from 'src/users/users.module';
 import { SignInProvider } from './providers/sign-in.provider';
 import jwtConfig from './config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
+import { GenerateTokensProvider } from './providers/generate-tokens.provider';
+import { RefreshTokensProvider } from './providers/refresh-tokens.provider';
 
 @Module({
   controllers: [AuthController],
@@ -19,6 +21,8 @@ import { JwtModule } from '@nestjs/jwt';
       useClass: BcryptProvider,
     },
     SignInProvider,
+    GenerateTokensProvider,
+    RefreshTokensProvider,
   ],
   imports: [
     forwardRef(() => UsersModule),
