@@ -1,7 +1,7 @@
 import {
   IsArray,
+  IsDate,
   IsEnum,
-  IsISO8601,
   IsInt,
   IsJSON,
   IsNotEmpty,
@@ -89,9 +89,9 @@ export class CreatePostDto {
 
   @ApiPropertyOptional({
     description: 'The date the post was published on',
-    example: '2021-01-01T00:00:00.000Z',
+    example: '2024-03-16T07:46:32+0000',
   })
-  @IsISO8601()
+  @IsDate()
   @IsOptional()
   publishOn?: Date;
 

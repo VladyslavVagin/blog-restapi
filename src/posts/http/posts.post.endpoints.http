@@ -1,18 +1,21 @@
+{{
+  exports.publishOn = new Date().toString()
+}}
 POST http://localhost:3000/posts
 Content-Type: application/json
 
 {
-  "title": "Angels for you",
-  "postType": "story",
-  "slug": "angels-for-you",
-  "status": "published",
+  "title": "First Post",
+  "postType": "series",
+  "slug": "new-with-nestjs-4",
+  "status": "draft",
   "content": "test content",
   "schema": "{\r\n \"@context\": \"https:\/\/schema.org\",\r\n \"@type\": \"Person\"\r\n }",
   "featuredImageUrl": "http://localhost.com/images/image1.jpg",
-  "publishOn": "2021-09-01T00:00:00Z",
+  "publishOn": "{{publishOn}}",
   "metaOptions" : {
       "metaValue": "{\"sidebarEnabled\": true, \"footerActive\":true}"
     },
-  "authorId":5,
-  "tags": [2, 3, 4]
+  "authorId":13,
+  "tags": [2, 3]
 }

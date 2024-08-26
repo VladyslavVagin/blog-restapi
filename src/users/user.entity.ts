@@ -8,21 +8,21 @@ export class User {
 
   @Column({
     type: 'varchar',
-    length: 50,
+    length: 96,
     nullable: false,
   })
   firstName: string;
 
   @Column({
     type: 'varchar',
-    length: 50,
+    length: 96,
     nullable: true,
   })
   lastName: string;
 
   @Column({
     type: 'varchar',
-    length: 50,
+    length: 96,
     nullable: false,
     unique: true,
   })
@@ -30,7 +30,7 @@ export class User {
 
   @Column({
     type: 'varchar',
-    length: 50,
+    length: 96,
     nullable: false,
   })
   password: string;
