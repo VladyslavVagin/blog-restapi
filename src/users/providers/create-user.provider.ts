@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user.entity';
 import { Repository } from 'typeorm';
 import { HashingProvider } from 'src/auth/providers/hashing.provider';
+import { MailService } from 'src/mail/providers/mail.service';
 
 @Injectable()
 export class CreateUserProvider {
@@ -20,7 +21,10 @@ export class CreateUserProvider {
 
     /** Inject hashingProvider */
     @Inject(forwardRef(() => HashingProvider))
-    private readonly hashingProvider: HashingProvider, 
+    private readonly hashingProvider: HashingProvider,
+
+    /** Inject mailService */
+    private readonly mailService: MailService,
   ) {}
 
   /**Create a new User method */
@@ -42,13 +46,12 @@ export class CreateUserProvider {
     if (existingUser) {
       throw new BadRequestException('User already exists with the same email');
     }
-   
-      // Create a new user
-      let newUser = this.usersRepository.create({
-        ...createUserDto,
-        password: await this.hashingProvider.hashPassword(createUserDto.password),
-      });
-  
+
+    // Create a new user
+    let newUser = this.usersRepository.create({
+      ...createUserDto,
+      password: await this.hashingProvider.hashPassword(createUserDto.password),
+    });
 
     try {
       newUser = await this.usersRepository.save(newUser);
@@ -58,6 +61,13 @@ export class CreateUserProvider {
         { description: 'Error to connection to Database' },
       );
     }
+
+    try {
+      await this.mailService.sendUserWelcome(newUser);
+    } catch (error) {
+      throw new RequestTimeoutException(error);
+    }
+
     return newUser;
   }
 }
